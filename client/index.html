@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Analytics Dashboard</title>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+<h1>Analytics Dashboard</h1>
+<p id="views">Views: 0</p>
+<p id="live">Live: 0</p>
+
+<script>
+const socket = io("http://localhost:5000");
+let live = 0;
+
+socket.on("new_visit", () => {
+  live++;
+  document.getElementById("live").innerText = "Live: " + live;
+});
+
+fetch("http://localhost:5000/stats")
+.then(res => res.json())
+.then(data => {
+  document.getElementById("views").innerText = "Views: " + data.totalViews;
+});
+</script>
+</body>
+</html>

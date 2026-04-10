@@ -1,0 +1,8 @@
+
+CREATE TABLE events (
+id SERIAL PRIMARY KEY,
+url TEXT,
+referrer TEXT,
+user_agent TEXT,
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
