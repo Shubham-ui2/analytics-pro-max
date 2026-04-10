@@ -1,29 +1,229 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-<title>Analytics Dashboard</title>
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <title>Analytics GOD UI</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      padding: 20px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar p {
+      margin: 12px 0;
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    .sidebar p:hover {
+      opacity: 1;
+      transform: translateX(5px);
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.4s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .big {
+      grid-column: span 2;
+    }
+
+    .full {
+      grid-column: span 3;
+    }
+
+    .live {
+      color: #22c55e;
+    }
+
+    .activity {
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+  </style>
 </head>
+
 <body>
-<h1>Analytics Dashboard</h1>
-<p id="views">Views: 0</p>
-<p id="live">Live: 0</p>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>🚀 Analytics GOD</h2>
+    <p>Dashboard</p>
+    <p>Realtime</p>
+    <p>Reports</p>
+    <p>Devices</p>
+    <p>Insights</p>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <h1>📊 Dashboard</h1>
+
+    <div class="grid">
+
+      <!-- KPI -->
+      <div class="card">
+        <h3>Total Views</h3>
+        <h1 id="views">0</h1>
+      </div>
+
+      <div class="card">
+        <h3 class="live">🔥 Live Users</h3>
+        <h1 id="live">0</h1>
+      </div>
+
+      <div class="card">
+        <h3>Engagement Score</h3>
+        <h1 id="engage">0%</h1>
+      </div>
+
+      <!-- LINE CHART -->
+      <div class="card big">
+        <h3>Traffic Trend</h3>
+        <canvas id="chart1"></canvas>
+      </div>
+
+      <!-- BAR CHART -->
+      <div class="card">
+        <h3>Realtime Users</h3>
+        <canvas id="chart2"></canvas>
+      </div>
+
+      <!-- PIE CHART -->
+      <div class="card">
+        <h3>Device Split</h3>
+        <canvas id="chart3"></canvas>
+      </div>
+
+      <!-- ACTIVITY FEED -->
+      <div class="card">
+        <h3>Live Activity</h3>
+        <div class="activity" id="activity"></div>
+      </div>
+
+      <!-- AI INSIGHTS -->
+      <div class="card full">
+        <h3>🧠 AI Insights</h3>
+        <p id="insightText">Analyzing...</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
 <script>
 const socket = io("http://localhost:5000");
-let live = 0;
 
-socket.on("new_visit", () => {
+let live = 0;
+let activityBox = document.getElementById("activity");
+
+// realtime updates
+socket.on("new_visit", (data) => {
   live++;
-  document.getElementById("live").innerText = "Live: " + live;
+  document.getElementById("live").innerText = live;
+
+  let item = document.createElement("p");
+  item.innerText = "New visit → " + data.url;
+  activityBox.prepend(item);
 });
 
+// fetch stats
 fetch("http://localhost:5000/stats")
 .then(res => res.json())
 .then(data => {
-  document.getElementById("views").innerText = "Views: " + data.totalViews;
+
+  document.getElementById("views").innerText = data.totalViews;
+  document.getElementById("engage").innerText = (data.totalViews * 2) + "%";
+
+  document.getElementById("insightText").innerText =
+    data.totalViews > 50
+      ? "🚀 High growth detected. Your system is performing excellently."
+      : "📉 Improve marketing & content for better engagement.";
+
+  new Chart(document.getElementById("chart1"), {
+    type: "line",
+    data: {
+      labels: ["Now"],
+      datasets: [{
+        data: [data.totalViews],
+        borderColor: "#6366f1",
+        tension: 0.4
+      }]
+    }
+  });
+
+  new Chart(document.getElementById("chart2"), {
+    type: "bar",
+    data: {
+      labels: ["Users"],
+      datasets: [{
+        data: [live],
+        backgroundColor: "#22c55e"
+      }]
+    }
+  });
+
+  new Chart(document.getElementById("chart3"), {
+    type: "doughnut",
+    data: {
+      labels: ["Desktop", "Mobile"],
+      datasets: [{
+        data: [70, 30],
+        backgroundColor: ["#6366f1", "#f59e0b"]
+      }]
+    }
+  });
+
 });
 </script>
+
 </body>
 </html>
