@@ -1,11 +1,184 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test Website</title>
-</head>
-<body>
-  <h1>Testing Analytics</h1>
+  <title>NeoNews X - Ultimate</title>
 
-  <script src="http://localhost:5000/tracker.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #020617;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* PARTICLE BACKGROUND */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 40px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .logo {
+      font-family: 'Orbitron';
+      color: #38bdf8;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      background: linear-gradient(90deg, #38bdf8, #6366f1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .live-badge {
+      color: #22c55e;
+      margin-top: 10px;
+    }
+
+    /* FEATURED */
+    .featured {
+      padding: 20px;
+      margin: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 40px rgba(56,189,248,0.3);
+    }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">⚡ NeoNews X</div>
+  <div>Future News Platform</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>The Future is Live</h1>
+  <p>Real-time AI-powered news platform</p>
+  <p class="live-badge">🟢 Live Tracking Active | Visitors: <span id="live">0</span></p>
+</div>
+
+<!-- FEATURED -->
+<div class="featured">
+  <h2>🚀 Featured: AI dominates global economy</h2>
+  <p>AI systems are now leading decision-making across industries...</p>
+</div>
+
+<!-- GRID -->
+<div class="grid">
+  <div class="card"><h3>🤖 AI Evolution</h3><p>AI continues to grow exponentially...</p></div>
+  <div class="card"><h3>🚀 Space Tech</h3><p>Humanity expands beyond Earth...</p></div>
+  <div class="card"><h3>💡 Startups</h3><p>Innovation drives global markets...</p></div>
+  <div class="card"><h3>🌐 Web 4.0</h3><p>Next-gen internet emerges...</p></div>
+</div>
+
+<div class="footer">© 2026 NeoNews X</div>
+
+<!-- TRACKER -->
+<script src="http://localhost:5000/tracker.js"></script>
+
+<!-- LIVE USERS -->
+<script>
+const socket = io("http://localhost:5000");
+let live = 0;
+
+socket.on("new_visit", () => {
+  live++;
+  document.getElementById("live").innerText = live;
+});
+</script>
+
+<!-- PARTICLES -->
+<script>
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 2,
+    speed: Math.random()
+  });
+}
+
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p => {
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+
+    p.y += p.speed;
+    if (p.y > canvas.height) p.y = 0;
+  });
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+
 </body>
 </html>
