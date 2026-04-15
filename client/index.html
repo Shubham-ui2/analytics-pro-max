@@ -160,7 +160,7 @@
 </div>
 
 <script>
-const socket = io("http://localhost:5000");
+const socket = io("https://analytics-backend-6xr9.onrender.com");
 
 let live = 0;
 let activityBox = document.getElementById("activity");
@@ -176,7 +176,7 @@ socket.on("new_visit", (data) => {
 });
 
 // fetch stats
-fetch("http://localhost:5000/stats")
+fetch("https://analytics-backend-6xr9.onrender.com/stats")
 .then(res => res.json())
 .then(data => {
 
